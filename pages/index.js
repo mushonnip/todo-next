@@ -1,65 +1,69 @@
-import {
-  Heading,
-  IconButton,
-  VStack,
-  useColorMode,
-  useColorModeValue,
-} from "@chakra-ui/react";
+import { Heading, VStack, useToast } from "@chakra-ui/react";
 import TodoList from "../components/todo-list";
 import AddTodo from "../components/add-todo";
-import { useState, useEffect } from "react";
-import { FaSun, FaMoon } from "react-icons/fa";
+import Navbar from "../components/navbar";
+import useSWR, { useSWRConfig } from "swr";
+
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function Home() {
-  const initialTodos = [
-    {
-      id: 1,
-      title: "Learn React",
-    },
-    {
-      id: 2,
-      title: "Learn Chakra UI",
-    },
-    {
-      id: 3,
-      title: "Learn Next.js",
-    },
-  ];
-
-  const [todos, setTodos] = useState(() => {
-    if (typeof window !== "undefined") {
-      return JSON.parse(localStorage.getItem("todos")) || initialTodos;
-    } else {
-      return [];
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
+  const toast = useToast();
+  const { data: todos = [], error } = useSWR(
+    process.env.NEXT_PUBLIC_HOST + "api/getTodos",
+    fetcher
+  );
+  const { mutate, isValidating } = useSWRConfig();
 
   function deleteTodo(id) {
     const newTodos = todos.filter((todo) => todo.id !== id);
-    setTodos(newTodos);
+    mutate(process.env.NEXT_PUBLIC_HOST + "api/getTodos", newTodos, false);
+    fetch(process.env.NEXT_PUBLIC_HOST + "api/deleteTodo/" + id, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then(() => {
+      mutate(process.env.NEXT_PUBLIC_HOST + "api/getTodos");
+      toast({
+        title: "Success",
+        description: "Todo deleted",
+        status: "success",
+        isClosable: true,
+        duration: 3000,
+        position: "top-right",
+      });
+    });
   }
 
   function addTodo(todo) {
-    setTodos([...todos, todo]);
+    mutate(
+      process.env.NEXT_PUBLIC_HOST + "api/getTodos",
+      [...todos, todo],
+      false
+    );
+    fetch(process.env.NEXT_PUBLIC_HOST + "api/createTodo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(todo),
+    }).then(() => {
+      mutate(process.env.NEXT_PUBLIC_HOST + "api/getTodos");
+      toast({
+        title: "Success",
+        description: "Todo added",
+        status: "success",
+        isClosable: true,
+        duration: 3000,
+        position: "top-right",
+      });
+    });
   }
 
-  const { toggleColorMode } = useColorMode();
-
   return (
-    <VStack p={4}>
-      <IconButton
-        icon={useColorModeValue(<FaMoon />, <FaSun />)}
-        isRound="true"
-        size={"lg"}
-        alignSelf={"flex-end"}
-        onClick={toggleColorMode}
-      />
+    <VStack p={4} spacing={8}>
+      <Navbar />
       <Heading
-        mb={8}
         fontWeight={"extrabold"}
         size={"2xl"}
         bgGradient="linear(to-r, pink.500, pink.300, blue.500)"
@@ -67,6 +71,7 @@ export default function Home() {
       >
         Todo Application
       </Heading>
+      {isValidating && <div>Validating...</div>}
       <TodoList todos={todos} deleteTodo={deleteTodo} />
       <AddTodo addTodo={addTodo} />
     </VStack>
