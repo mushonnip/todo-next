@@ -4,7 +4,12 @@ import AddTodo from "../components/add-todo";
 import Navbar from "../components/navbar";
 import useSWR, { useSWRConfig } from "swr";
 
-const fetcher = (...args) => fetch(...args).then((res) => res.json());
+const fetcher = (...args) =>
+  fetch(...args, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+    },
+  }).then((res) => res.json());
 
 export default function Home() {
   const toast = useToast();
@@ -21,6 +26,7 @@ export default function Home() {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
       },
     }).then(() => {
       mutate(process.env.NEXT_PUBLIC_HOST + "api/getTodos");
