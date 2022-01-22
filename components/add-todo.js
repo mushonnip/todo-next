@@ -21,21 +21,13 @@ export default function AddTodo({ addTodo }) {
     } else {
       addTodo(todo);
       setContent("");
-      toast({
-        title: "Success",
-        description: "Todo added",
-        status: "success",
-        isClosable: true,
-        duration: 3000,
-        position: "top-right",
-      });
     }
   }
 
   const [content, setContent] = useState("");
   return (
     <form onSubmit={handleSubmit}>
-      <HStack mt={8}>
+      <HStack>
         <Input
           type={"text"}
           variant={"filled"}
