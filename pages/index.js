@@ -1,7 +1,6 @@
 import { Heading, VStack, useToast } from "@chakra-ui/react";
 import TodoList from "../components/todo-list";
 import AddTodo from "../components/add-todo";
-import Navbar from "../components/navbar";
 import useSWR, { useSWRConfig } from "swr";
 
 const fetcher = (...args) =>
@@ -68,7 +67,6 @@ export default function Home() {
 
   return (
     <VStack p={4} spacing={8}>
-      <Navbar />
       <Heading
         fontWeight={"extrabold"}
         size={"2xl"}

@@ -13,13 +13,7 @@ import Navbar from "../components/navbar";
 export default function Login() {
   return (
     <VStack p={4}>
-      <Navbar />
-      <Flex
-        w={"full"}
-        align={"center"}
-        justifyContent={"center"}
-        // backgroundColor={"yellow"}
-      >
+      <Flex w={"full"} align={"center"} justifyContent={"center"}>
         <Box p={8} borderWidth={4} borderRadius={"lg"} boxShadow={"lg"}>
           <Box textAlign={"center"}>
             <Heading>Login</Heading>
