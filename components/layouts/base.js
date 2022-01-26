@@ -6,9 +6,7 @@ function Main({ children, title }) {
   return (
     <Box as={"main"}>
       <Head>
-        <title>
-          {title} | {process.env.NEXT_APP_NAME}
-        </title>
+        <title>{title} | Todo App</title>
       </Head>
       <Navbar />
       <Container pt={16}>{children}</Container>
