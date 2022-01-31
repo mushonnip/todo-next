@@ -1,10 +1,36 @@
 import NextAuth from "next-auth/next";
 import GithubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
+import axios from "axios";
 export default NextAuth({
   providers: [
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
+    }),
+    CredentialsProvider({
+      name: "Credentials",
+      authorize: async (credentials) => {
+        const user = await axios.post(
+          "http://localhost:8000/api/login",
+          {
+            email: "admin@mail.com",
+            password: "password",
+          },
+          {
+            headers: {
+              accept: "*/*",
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (user) {
+          return user;
+        } else {
+          return null;
+        }
+      },
     }),
   ],
   session: {
@@ -21,4 +47,5 @@ export default NextAuth({
     // Note: This option is ignored if using JSON Web Tokens
     // updateAge: 24 * 60 * 60, // 24 hours
   },
+  debug: true,
 });
