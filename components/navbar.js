@@ -17,7 +17,7 @@ import {
   Link,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
-import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
+import { HamburgerIcon, CloseIcon, MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { useSession, SignIn, SignOut, signOut } from "next-auth/react";
 
 const Links = ["Nav1", "Nav2", "Nav3"];
@@ -38,7 +38,7 @@ const NavLink = ({ children }) => (
 );
 
 export default function Navbar() {
-  const { toggleColorMode } = useColorMode();
+  const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: session } = useSession();
   return (
@@ -80,6 +80,9 @@ export default function Navbar() {
           </HStack>
         </HStack>
         <Flex alignItems={"center"}>
+          <Button onClick={toggleColorMode} mr={2}>
+            {colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+          </Button>
           {session ? (
             <Menu>
               <MenuButton
@@ -95,8 +98,8 @@ export default function Navbar() {
                 <MenuItem>Link 1</MenuItem>
                 <MenuItem>Link 2</MenuItem>
                 <MenuDivider />
-                <MenuItem>
-                  <Link href="/api/auth/signout">
+                <Link href="/api/auth/signout">
+                  <MenuItem>
                     <Box
                       color={"red.300"}
                       onClick={(e) => {
@@ -106,8 +109,8 @@ export default function Navbar() {
                     >
                       Sign Out
                     </Box>
-                  </Link>
-                </MenuItem>
+                  </MenuItem>
+                </Link>
               </MenuList>
             </Menu>
           ) : (
